@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Http;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
+use App\Mail\TransactionReceipt;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 class TransactionController extends Controller
 {
@@ -42,6 +46,46 @@ class TransactionController extends Controller
         return response()->json($transaction, 201);
     }
 
+    public function sendReceipt(Request $request)
+    {
+        $user = $request->user();
+        
+        $request->validate([
+            'encrypted_amount' => 'required|string'
+        ]);
+
+        try {
+            Mail::to($user->email)->send(
+                new TransactionReceipt($user->name, $request->encrypted_amount)
+            );
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Transaction processed and receipt emailed.'
+            ]);
+
+        } catch (TransportExceptionInterface $e) {
+            Log::error('Resend API Email Failure: ' . $e->getMessage(), [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Your transaction was processed, but we encountered an issue sending your receipt. Please check your dashboard later.'
+            ], 500);
+            
+        } catch (\Exception $e) {
+            Log::critical('Unexpected Transaction Error: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'An unexpected error occurred. Please contact support.'
+            ], 500);
+        }
+    }
+
     public function getSubscriptions(Request $request)
     {
         $subscriptions = $request->user()->transactions()
@@ -58,19 +102,26 @@ class TransactionController extends Controller
         $currentMonth = Carbon::now()->month;
         $currentYear = Carbon::now()->year;
 
-        $totalMonthly = Transaction::where('user_id', $userId)
-            ->whereMonth('created_at', $currentMonth)
-            ->whereYear('created_at', $currentYear)
+        $allUserTransactions = Transaction::where('user_id', $userId)->get();
+
+        $totalMonthly = $allUserTransactions
+            ->filter(function($t) use ($currentMonth, $currentYear) {
+                return $t->created_at->month == $currentMonth && $t->created_at->year == $currentYear;
+            })
             ->sum('amount');
 
-        $totalRecurring = Transaction::where('user_id', $userId)
+        $totalRecurring = $allUserTransactions
             ->where('is_subscription', true)
             ->sum('amount');
 
-        $categoryTotals = Transaction::where('user_id', $userId)
-            ->select('category', DB::raw('SUM(amount) as total'))
+        $categoryTotals = $allUserTransactions
             ->groupBy('category')
-            ->get();
+            ->map(function ($transactions, $category) {
+                return (object) [
+                    'category' => $category,
+                    'total' => $transactions->sum('amount')
+                ];
+            })->values();
             
         // Budget Progress
         $budgets = $request->user()->budgets;
@@ -92,22 +143,27 @@ class TransactionController extends Controller
 
         $aiResponse = 'AI Coach summary unavailable.';
         
-        $apiKey = env('OPENAI_API_KEY');
+        $apiKey = env('GEMINI_API_KEY');
         if ($apiKey && $apiKey !== 'your_key_here') {
             try {
-                $response = Http::withHeaders([
-                    'Authorization' => 'Bearer ' . $apiKey,
-                ])->post('https://api.openai.com/v1/chat/completions', [
-                    'model' => 'gpt-3.5-turbo',
-                    'messages' => [
-                        ['role' => 'system', 'content' => 'You are a concise financial coach.'],
-                        ['role' => 'user', 'content' => $prompt]
-                    ],
-                    'max_tokens' => 100,
+                $geminiPrompt = "System: You are a concise financial coach. Do NOT use markdown formatting. Output plain text only.\nUser: " . $prompt;
+                
+                $response = Http::withoutVerifying()->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key={$apiKey}", [
+                    'contents' => [
+                        [
+                            'parts' => [
+                                ['text' => $geminiPrompt]
+                            ]
+                        ]
+                    ]
                 ]);
 
                 if ($response->successful()) {
-                    $aiResponse = $response->json('choices.0.message.content') ?? $aiResponse;
+                    $text = $response->json('candidates.0.content.parts.0.text');
+                    if ($text) {
+                        $aiResponse = $text;
+                        $request->user()->increment('ai_interactions_count');
+                    }
                 }
             } catch (\Exception $e) {
                 // Keep default message

@@ -4,14 +4,15 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Requests\ChatbotRequest;
 use Illuminate\Support\Facades\Http;
 use App\Models\Transaction;
 
 class ChatController extends Controller
 {
-    public function ask(Request $request)
+    public function ask(ChatbotRequest $request)
     {
-        $request->validate(['message' => 'required|string']);
+        // Validation is handled by ChatbotRequest
         
         $userId = $request->user()->id;
         $recentTransactions = Transaction::where('user_id', $userId)->orderBy('created_at', 'desc')->take(20)->get();
@@ -19,28 +20,35 @@ class ChatController extends Controller
         $context = "Context - User's last 20 transactions: " . json_encode($recentTransactions) . ".\n";
         $prompt = $context . "User query: " . $request->message;
 
-        $apiKey = env('OPENAI_API_KEY');
+        $apiKey = env('GEMINI_API_KEY');
         if (!$apiKey || $apiKey === 'your_key_here') {
-            return response()->json(['reply' => 'OpenAI API key is missing. Please configure it in the backend .env file.']);
+            return response()->json(['reply' => 'Gemini API key is missing. Please configure it in the backend .env file.']);
         }
 
         try {
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $apiKey,
-            ])->post('https://api.openai.com/v1/chat/completions', [
-                'model' => 'gpt-3.5-turbo',
-                'messages' => [
-                    ['role' => 'system', 'content' => 'You are a helpful, concise financial coach. Use the provided transaction context to answer the user.'],
-                    ['role' => 'user', 'content' => $prompt]
-                ],
-                'max_tokens' => 150,
+            $geminiPrompt = "System: You are a helpful, concise financial coach. Use the provided transaction context to answer the user. Do NOT use markdown formatting like asterisks (*), bold (**), or bullet points. Output plain text only.\n" . $prompt;
+
+            $response = Http::withoutVerifying()->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key={$apiKey}", [
+                'contents' => [
+                    [
+                        'parts' => [
+                            ['text' => $geminiPrompt]
+                        ]
+                    ]
+                ]
             ]);
 
             if ($response->successful()) {
-                return response()->json(['reply' => $response->json('choices.0.message.content')]);
+                $text = $response->json('candidates.0.content.parts.0.text');
+                
+                $user = $request->user();
+                $user->increment('ai_interactions_count');
+                
+                return response()->json(['reply' => $text ?: 'Received empty response from AI.']);
             }
             
-            return response()->json(['reply' => 'Error communicating with AI service.'], 500);
+            $apiError = $response->json('error.message') ?? 'Error communicating with AI service.';
+            return response()->json(['reply' => 'Gemini API Error: ' . $apiError], 500);
         } catch (\Exception $e) {
             return response()->json(['reply' => 'Exception occurred: ' . $e->getMessage()], 500);
         }

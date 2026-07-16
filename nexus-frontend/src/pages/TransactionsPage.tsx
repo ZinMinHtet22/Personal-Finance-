@@ -17,7 +17,7 @@ export default function TransactionsPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black flex">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0a0a0a] flex">
       <Sidebar />
       <div className="flex-1 ml-64 flex flex-col">
         <Header />
@@ -47,7 +47,7 @@ export default function TransactionsPage() {
                           <td className="py-3 font-medium text-slate-700 dark:text-slate-200">${parseFloat(t.amount).toFixed(2)}</td>
                           <td className="py-3">
                             {t.is_subscription ? (
-                              <span className="px-2 py-1 bg-indigo-900/30 text-indigo-400 rounded-md text-xs">Subscription</span>
+                              <span className="px-2 py-1 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-md text-xs font-medium">Subscription</span>
                             ) : (
                               <span className="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-md text-xs">One-time</span>
                             )}

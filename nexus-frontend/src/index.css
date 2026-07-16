@@ -3,17 +3,18 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
+  --color-white: #f8fafc;
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
-  --background: #fafafa;
-  --foreground: #09090b;
+  --background: #f1f5f9;
+  --foreground: #0f172a;
 }
 
 .dark {
-  --background: #000000;
-  --foreground: #fafafa;
+  --background: #020617;
+  --foreground: #f8fafc;
 }
 
 body {
@@ -21,14 +22,37 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Minimalist / Clean utility classes */
+/* Premium utility classes */
 .glass-panel {
-  @apply bg-white dark:bg-[#0a0a0a] border border-zinc-200 dark:border-zinc-800 shadow-sm rounded-xl transition-colors duration-200;
+  @apply bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/50 dark:border-slate-800/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] rounded-2xl transition-all duration-300;
 }
 
 /* Base header styles */
 h1, h2, h3, h4, h5, h6 {
-  @apply tracking-tight;
+  @apply tracking-tight font-semibold;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
 }

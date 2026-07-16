@@ -20,43 +20,43 @@ const MOCK_DATA: Transaction[] = [
 
 export default function TransactionList({ transactions = MOCK_DATA }: TransactionListProps) {
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden flex flex-col h-[400px]">
-      <div className="p-6 border-b border-slate-800">
-        <h3 className="text-lg font-semibold text-slate-200">Recent Transactions</h3>
+    <div className="glass-panel flex flex-col h-[400px]">
+      <div className="p-6 border-b border-slate-200/50 dark:border-slate-800/50">
+        <h3 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">Recent Transactions</h3>
       </div>
       
       <div className="flex-1 overflow-y-auto">
         <table className="w-full text-left border-collapse">
-          <thead className="sticky top-0 bg-slate-950 text-slate-400 text-sm">
+          <thead className="sticky top-0 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-md text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider z-10 border-b border-slate-200/50 dark:border-slate-800/50">
             <tr>
-              <th className="px-6 py-3 font-medium">Category</th>
-              <th className="px-6 py-3 font-medium">Date</th>
-              <th className="px-6 py-3 font-medium">Type</th>
-              <th className="px-6 py-3 font-medium text-right">Amount</th>
+              <th className="px-6 py-4 font-semibold">Category</th>
+              <th className="px-6 py-4 font-semibold">Date</th>
+              <th className="px-6 py-4 font-semibold">Type</th>
+              <th className="px-6 py-4 font-semibold text-right">Amount</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800">
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
             {transactions.map((tx) => (
-              <tr key={tx.id} className="hover:bg-slate-800/50 transition-colors">
+              <tr key={tx.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors group">
                 <td className="px-6 py-4">
-                  <span className="text-slate-200 font-medium">{tx.category}</span>
+                  <span className="text-slate-900 dark:text-slate-200 font-semibold group-hover:text-black dark:group-hover:text-white transition-colors">{tx.category}</span>
                 </td>
-                <td className="px-6 py-4 text-slate-400 text-sm">
-                  {new Date(tx.created_at).toLocaleDateString()}
+                <td className="px-6 py-4 text-slate-500 dark:text-slate-400 text-sm font-medium">
+                  {new Date(tx.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                 </td>
                 <td className="px-6 py-4">
                   {tx.is_subscription ? (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-900/50 text-purple-400 border border-purple-700/50">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-900 dark:bg-white text-white dark:text-slate-900 border border-transparent">
                       Subscription
                     </span>
                   ) : (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-800 text-slate-400 border border-slate-700">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                       One-time
                     </span>
                   )}
                 </td>
                 <td className="px-6 py-4 text-right">
-                  <span className="text-slate-200 font-semibold">${parseFloat(tx.amount).toFixed(2)}</span>
+                  <span className="text-slate-900 dark:text-slate-200 font-bold">${parseFloat(tx.amount).toFixed(2)}</span>
                 </td>
               </tr>
             ))}

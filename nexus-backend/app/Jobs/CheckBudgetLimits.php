@@ -41,12 +41,14 @@ class CheckBudgetLimits implements ShouldQueue
             $budgets = $user->budgets;
             if ($budgets->isEmpty()) continue;
 
-            $categoryTotals = $user->transactions()
+            $transactions = $user->transactions()
                 ->whereMonth('created_at', $currentMonth)
                 ->whereYear('created_at', $currentYear)
-                ->select('category', DB::raw('SUM(amount) as total'))
-                ->groupBy('category')
                 ->get();
+
+            $categoryTotals = $transactions->groupBy('category')->map(function ($trans, $cat) {
+                return (object) ['category' => $cat, 'total' => $trans->sum('amount')];
+            })->values();
 
             foreach ($budgets as $budget) {
                 $spent = $categoryTotals->firstWhere('category', $budget->category)->total ?? 0;

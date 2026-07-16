@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import AICoachBanner from '../components/AICoachBanner';
+import AIChatInterface from '../components/Chatbot/AIChatInterface';
 import CategoryChart from '../components/CategoryChart';
 import TransactionList from '../components/TransactionList';
 import client from '../api/client';
@@ -189,6 +190,7 @@ export default function DashboardPage() {
           </div>
         )}
       </div>
+      <AIChatInterface />
     </div>
   );
 }

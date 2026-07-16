@@ -10,13 +10,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Laragear\WebAuthn\WebAuthnAuthentication;
+use Laragear\WebAuthn\Contracts\WebAuthnAuthenticatable;
 
-#[Fillable(['name', 'email', 'password', 'currency', 'locale', 'theme', 'notification_preferences'])]
+#[Fillable(['name', 'email', 'role', 'password', 'currency', 'locale', 'theme', 'notification_preferences', 'is_admin', 'account_status', 'ai_interactions_count', 'last_login_at', 'otp_code'])]
 #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable
+class User extends Authenticatable implements WebAuthnAuthenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, WebAuthnAuthentication;
 
     /**
      * Get the attributes that should be cast.
@@ -29,6 +31,8 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'notification_preferences' => 'array',
+            'is_admin' => 'boolean',
+            'last_login_at' => 'datetime',
         ];
     }
 

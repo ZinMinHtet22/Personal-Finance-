@@ -14,6 +14,8 @@ class Transaction extends Model
         return [
             'is_subscription' => 'boolean',
             'renewal_date' => 'date',
+            'amount' => 'encrypted',
+            'description' => 'encrypted',
         ];
     }
 

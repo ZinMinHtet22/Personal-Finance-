@@ -19,7 +19,7 @@ export default function SubscriptionsPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black flex">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0a0a0a] flex">
       <Sidebar />
       <div className="flex-1 ml-64 flex flex-col">
         <Header />
@@ -30,7 +30,7 @@ export default function SubscriptionsPage() {
             {subscriptions.map(sub => (
               <div key={sub.id} className="glass-panel p-6 rounded-xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-3">
-                  <span className="bg-purple-900/50 text-purple-400 text-xs px-2 py-1 rounded-full border border-purple-700/50">Recurring</span>
+                  <span className="bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-900/50 dark:text-purple-400 dark:border-purple-700/50 text-xs px-2 py-1 rounded-full border">Recurring</span>
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{sub.category}</h3>
                 <p className="text-3xl font-bold text-indigo-400 mb-4">${parseFloat(sub.amount).toFixed(2)}</p>

@@ -58,7 +58,7 @@ export default function LocaleSelect({
             <button
               key={c.value}
               type="button"
-              className={`w-full text-left px-4 py-2 hover:bg-slate-700 transition-colors ${c.value === value ? 'bg-indigo-600/20 text-indigo-400' : 'text-slate-700 dark:text-slate-200'}`}
+              className={`w-full text-left px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors ${c.value === value ? 'bg-slate-200 dark:bg-slate-700 font-medium text-slate-900 dark:text-white' : 'text-slate-700 dark:text-slate-200'}`}
               onClick={() => {
                 onChange(c.value);
                 setIsOpen(false);

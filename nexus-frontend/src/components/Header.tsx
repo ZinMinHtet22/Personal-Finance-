@@ -60,18 +60,18 @@ export default function Header() {
   });
 
   return (
-    <header className="flex justify-between items-center py-6 px-8 bg-zinc-50 dark:bg-black border-b border-slate-200 dark:border-slate-800">
+    <header className="flex justify-between items-center py-6 px-8 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 sticky top-0 z-30 transition-colors">
       <div>
-        <h2 className="text-2xl font-bold text-slate-100">Welcome Back, {userName}</h2>
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Welcome Back, <span className="text-slate-900 dark:text-white">{userName}</span></h2>
         <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">{date}</p>
       </div>
       <div className="flex items-center gap-4">
         <CurrencySelect 
           value={currency} 
           onChange={handleCurrencyChange} 
-          buttonClassName="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-700 rounded-lg px-4 py-2 hover:border-indigo-500 focus:border-indigo-500"
+          buttonClassName="glass-panel text-slate-700 dark:text-slate-200 px-4 py-2 hover:border-slate-400 focus:border-slate-400 dark:hover:border-slate-600 dark:focus:border-slate-600"
         />
-        <div className="w-10 h-10 rounded-full bg-indigo-600 hover:bg-indigo-500 hover:scale-105 active:scale-95 transition-all flex items-center justify-center text-slate-900 dark:text-white font-bold">
+        <div className="w-10 h-10 rounded-full bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-100 hover:scale-105 active:scale-95 transition-all flex items-center justify-center text-white dark:text-slate-900 font-bold cursor-pointer shadow-sm">
           {initials}
         </div>
       </div>

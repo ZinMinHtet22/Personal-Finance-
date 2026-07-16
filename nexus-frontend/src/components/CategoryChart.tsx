@@ -12,13 +12,16 @@ interface CategoryChartProps {
 const COLORS = ['#6366f1', '#a855f7', '#ec4899', '#3b82f6', '#10b981', '#f59e0b'];
 
 export default function CategoryChart({ data }: CategoryChartProps) {
-  const chartData = data.map(d => ({ name: d.category, value: parseFloat(d.total) }));
+  const chartData = data
+    .map(d => ({ name: d.category, value: parseFloat(d.total) }))
+    .filter(d => !isNaN(d.value) && d.value > 0);
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 h-[400px]">
-      <h3 className="text-lg font-semibold text-slate-200 mb-4">Expenses by Category</h3>
+    <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 h-[400px] flex flex-col">
+      <h3 className="text-lg font-semibold text-slate-200 mb-4 shrink-0">Expenses by Category</h3>
       {chartData.length > 0 ? (
-        <ResponsiveContainer width="100%" height="100%">
+        <div className="flex-1 min-h-0 w-full">
+          <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
               data={chartData}
@@ -38,9 +41,10 @@ export default function CategoryChart({ data }: CategoryChartProps) {
               itemStyle={{ color: '#f8fafc' }}
             />
           </PieChart>
-        </ResponsiveContainer>
+          </ResponsiveContainer>
+        </div>
       ) : (
-        <div className="h-full flex items-center justify-center text-slate-500">
+        <div className="flex-1 flex items-center justify-center text-slate-500">
           No data available
         </div>
       )}

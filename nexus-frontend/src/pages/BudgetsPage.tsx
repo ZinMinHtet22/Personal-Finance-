@@ -33,7 +33,7 @@ export default function BudgetsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black flex">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0a0a0a] flex">
       <Sidebar />
       <div className="flex-1 ml-64 flex flex-col">
         <Header />
@@ -48,7 +48,7 @@ export default function BudgetsPage() {
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">Set Budget Limit</h3>
                 <div>
                   <label className="block text-slate-500 dark:text-slate-400 text-sm mb-1">Category</label>
-                  <select value={category} onChange={e => setCategory(e.target.value)} className="w-full bg-zinc-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-4 py-2 text-slate-900 dark:text-white outline-none">
+                  <select value={category} onChange={e => setCategory(e.target.value)} className="w-full bg-slate-50 dark:bg-[#0a0a0a] border border-slate-200 dark:border-slate-800 rounded-lg px-4 py-2 text-slate-900 dark:text-white outline-none">
                     <option>Groceries</option>
                     <option>Entertainment</option>
                     <option>Transport</option>
@@ -58,9 +58,9 @@ export default function BudgetsPage() {
                 </div>
                 <div>
                   <label className="block text-slate-500 dark:text-slate-400 text-sm mb-1">Limit Amount</label>
-                  <input type="number" value={limit} onChange={e => setLimit(e.target.value)} step="0.01" required className="w-full bg-zinc-50 dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg px-4 py-2 text-slate-900 dark:text-white outline-none" />
+                  <input type="number" value={limit} onChange={e => setLimit(e.target.value)} step="0.01" required className="w-full bg-slate-50 dark:bg-[#0a0a0a] border border-slate-200 dark:border-slate-800 rounded-lg px-4 py-2 text-slate-900 dark:text-white outline-none" />
                 </div>
-                <button type="submit" className="w-full bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 active:scale-95 transition-all shadow-sm font-medium text-slate-900 dark:text-white py-2 rounded-lg font-medium transition-colors">
+                <button type="submit" className="w-full bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 active:scale-95 transition-all shadow-sm font-medium py-2 rounded-lg transition-colors">
                   Save Budget
                 </button>
               </form>
@@ -72,7 +72,7 @@ export default function BudgetsPage() {
                 <p className="text-slate-500">No budgets set.</p>
               ) : (
                 budgets.map(b => (
-                  <div key={b.id} className="bg-zinc-50 dark:bg-black p-4 rounded-lg border border-slate-200 dark:border-slate-800">
+                  <div key={b.id} className="bg-slate-50 dark:bg-[#0a0a0a] p-4 rounded-lg border border-slate-200 dark:border-slate-800">
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-slate-900 dark:text-white font-medium">{b.category}</span>
                       <span className="text-slate-500 dark:text-slate-400">Limit: ${b.limit_amount}</span>
