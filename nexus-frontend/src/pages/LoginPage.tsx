@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import client from '../api/client';
 
 export default function LoginPage() {
@@ -8,10 +8,13 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
+    setError('');
     try {
       const res = await client.post('/login', { email, password });
       localStorage.setItem('nexus_token', res.data.token);
@@ -30,6 +33,8 @@ export default function LoginPage() {
       } else {
         setError(err.response?.data?.message || 'Login failed');
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -90,8 +95,19 @@ export default function LoginPage() {
             </div>
           </div>
           
-          <button type="submit" className="w-full bg-slate-900 dark:bg-white text-white dark:text-black font-semibold py-4 rounded-xl transition-all shadow-md active:scale-[0.98] flex justify-center items-center mt-6 hover:bg-slate-800 dark:hover:bg-slate-200">
-            Sign In
+          <button 
+            type="submit" 
+            disabled={isLoading}
+            className="w-full bg-slate-900 dark:bg-white text-white dark:text-black font-semibold py-4 rounded-xl transition-all shadow-md active:scale-[0.98] flex justify-center items-center mt-6 hover:bg-slate-800 dark:hover:bg-slate-200 disabled:opacity-70 disabled:cursor-not-allowed"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="animate-spin mr-2" size={20} />
+                Signing In...
+              </>
+            ) : (
+              'Sign In'
+            )}
           </button>
         </form>
         

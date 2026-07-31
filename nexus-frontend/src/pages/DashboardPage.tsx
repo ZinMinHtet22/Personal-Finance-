@@ -10,6 +10,8 @@ import client from '../api/client';
 import { exportToCsv } from '../utils/exportCsv';
 import { Download } from 'lucide-react';
 import CategorySelect from '../components/CategorySelect';
+import { DashboardSkeleton } from '../components/SkeletonLoader';
+import { motion } from 'framer-motion';
 
 export default function DashboardPage() {
   const [summaryData, setSummaryData] = useState<any>(null);
@@ -61,14 +63,26 @@ export default function DashboardPage() {
     }
   };
 
-  if (loading) return <div className="min-h-screen bg-zinc-50 dark:bg-black flex items-center justify-center text-slate-900 dark:text-white">Loading...</div>;
-
-  return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black flex">
+  if (loading) return (
+    <div className="min-h-screen bg-zinc-50 dark:bg-[#0a0a0a] flex">
       <Sidebar />
       <div className="flex-1 ml-64 flex flex-col relative">
         <Header />
-        <main className="flex-1 p-8 overflow-y-auto relative">
+        <DashboardSkeleton />
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-zinc-50 dark:bg-[#0a0a0a] flex">
+      <Sidebar />
+      <div className="flex-1 ml-64 flex flex-col relative min-w-0">
+        <Header />
+        <motion.main 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex-1 p-8 overflow-y-auto relative"
+        >
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Overview</h2>
             <div className="flex gap-4">
@@ -88,7 +102,7 @@ export default function DashboardPage() {
               <CategoryChart data={summaryData?.categories?.length ? summaryData.categories : []} />
               
               {summaryData?.budget_progress && summaryData.budget_progress.length > 0 && (
-                <div className="glass-panel rounded-xl p-6">
+                <div className="glass-panel rounded-xl p-6 bg-white dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200 dark:border-slate-800 shadow-sm">
                   <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Budget Progress</h3>
                   <div className="space-y-4">
                     {summaryData.budget_progress.map((bp: any, idx: number) => {
@@ -102,8 +116,13 @@ export default function DashboardPage() {
                               ${parseFloat(bp.spent).toFixed(0)} / ${parseFloat(bp.limit_amount).toFixed(0)}
                             </span>
                           </div>
-                          <div className="w-full bg-zinc-50 dark:bg-black rounded-full h-2 overflow-hidden border border-slate-200 dark:border-slate-800">
-                            <div className={`h-2 rounded-full ${isOver ? 'bg-red-500' : 'bg-indigo-500'}`} style={{ width: `${percent}%` }}></div>
+                          <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden border border-slate-200 dark:border-slate-700/50">
+                            <motion.div 
+                              initial={{ width: 0 }}
+                              animate={{ width: `${percent}%` }}
+                              transition={{ duration: 1, ease: 'easeOut' }}
+                              className={`h-2 rounded-full ${isOver ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]' : 'bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]'}`} 
+                            />
                           </div>
                         </div>
                       )
@@ -116,7 +135,7 @@ export default function DashboardPage() {
               <TransactionList transactions={summaryData?.recent_transactions} />
             </div>
           </div>
-        </main>
+        </motion.main>
 
         {showAddModal && (
           <div className="absolute inset-0 bg-zinc-50 dark:bg-black/80 flex items-center justify-center z-50">

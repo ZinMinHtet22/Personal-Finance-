@@ -10,16 +10,26 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [role, setRole] = useState('normal');
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+    setLoading(true);
     try {
       await client.post('/register', { name, email, password, role });
       navigate('/verify-email', { state: { email } });
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Registration failed');
+      if (err.response?.data?.errors) {
+        const firstErrorKey = Object.keys(err.response.data.errors)[0];
+        setError(err.response.data.errors[firstErrorKey][0] || err.response?.data?.message || 'Registration failed');
+      } else {
+        setError(err.response?.data?.message || 'Registration failed');
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -68,7 +78,8 @@ export default function RegisterPage() {
           </div>
           <div>
             <label className="block text-slate-700 dark:text-slate-300 text-sm mb-2 font-medium">Email Address</label>
-            <input type="email" value={email} onChange={e => setEmail(e.target.value)} required className="w-full bg-white/50 dark:bg-[#0a0a0a]/50 border border-slate-300 dark:border-slate-800 rounded-xl px-4 py-3.5 text-slate-900 dark:text-white outline-none focus:border-slate-400 dark:focus:border-slate-600 transition-all shadow-sm placeholder:text-slate-400 dark:placeholder:text-slate-600 font-medium backdrop-blur-md" placeholder="name@company.com" />
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)} required className="w-full bg-white/50 dark:bg-[#0a0a0a]/50 border border-slate-300 dark:border-slate-800 rounded-xl px-4 py-3.5 text-slate-900 dark:text-white outline-none focus:border-slate-400 dark:focus:border-slate-600 transition-all shadow-sm placeholder:text-slate-400 dark:placeholder:text-slate-600 font-medium backdrop-blur-md" placeholder="name@gmail.com" />
+            <p className="mt-1 text-xs text-slate-400">Must be a @gmail.com address</p>
           </div>
           <div>
             <label className="block text-slate-700 dark:text-slate-300 text-sm mb-2 font-medium">Password</label>
@@ -82,14 +93,19 @@ export default function RegisterPage() {
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
+            <p className="mt-1 text-xs text-slate-400">Min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 symbol</p>
           </div>
           <div>
             <label className="block text-slate-700 dark:text-slate-300 text-sm mb-2 font-medium">Account Type</label>
             <RoleSelect value={role} onChange={setRole} />
           </div>
           
-          <button type="submit" className="w-full bg-slate-900 dark:bg-white text-white dark:text-black font-semibold py-4 rounded-xl transition-all shadow-md active:scale-[0.98] flex justify-center items-center mt-6 hover:bg-slate-800 dark:hover:bg-slate-200">
-            Create Account
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-slate-900 dark:bg-white text-white dark:text-black font-semibold py-4 rounded-xl transition-all shadow-md active:scale-[0.98] flex justify-center items-center mt-6 hover:bg-slate-800 dark:hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? 'Creating Account...' : 'Create Account'}
           </button>
         </form>
         

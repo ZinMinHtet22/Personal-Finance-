@@ -17,8 +17,8 @@ export default function CategoryChart({ data }: CategoryChartProps) {
     .filter(d => !isNaN(d.value) && d.value > 0);
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 h-[400px] flex flex-col">
-      <h3 className="text-lg font-semibold text-slate-200 mb-4 shrink-0">Expenses by Category</h3>
+    <div className="bg-white dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200 dark:border-slate-800 shadow-sm rounded-xl p-6 h-[400px] flex flex-col">
+      <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-200 mb-4 shrink-0">Expenses by Category</h3>
       {chartData.length > 0 ? (
         <div className="flex-1 min-h-0 w-full">
           <ResponsiveContainer width="100%" height="100%">
@@ -37,8 +37,9 @@ export default function CategoryChart({ data }: CategoryChartProps) {
               ))}
             </Pie>
             <Tooltip 
-              contentStyle={{ backgroundColor: '#1e293b', borderColor: '#334155', color: '#f8fafc' }}
-              itemStyle={{ color: '#f8fafc' }}
+              contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '12px', color: '#f8fafc', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.5)' }}
+              itemStyle={{ color: '#f8fafc', fontWeight: 500 }}
+              formatter={(value: number) => [`$${value.toLocaleString()}`, undefined]}
             />
           </PieChart>
           </ResponsiveContainer>

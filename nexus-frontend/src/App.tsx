@@ -8,6 +8,7 @@ import SettingsPage from './pages/SettingsPage';
 import ChatbotPage from './pages/ChatbotPage';
 import BudgetsPage from './pages/BudgetsPage';
 import TransactionsPage from './pages/TransactionsPage';
+import CalculatorsPage from './pages/CalculatorsPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import AdminBiometricLogin from './pages/AdminBiometricLogin';
 import LandingPage from './pages/LandingPage';
@@ -28,6 +29,7 @@ function App() {
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/chat" element={<ChatbotPage />} />
         <Route path="/budgets" element={<BudgetsPage />} />
+        <Route path="/calculators" element={<CalculatorsPage />} />
         <Route path="/admin" element={<AdminDashboardPage />} />
         <Route path="/admin/login" element={<AdminBiometricLogin />} />
       </Routes>

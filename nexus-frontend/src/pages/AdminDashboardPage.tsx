@@ -95,8 +95,8 @@ export default function AdminDashboardPage() {
                         <td className="p-4 pl-6 font-mono text-xs text-slate-500">#{user.id}</td>
                         <td className="p-4 font-medium whitespace-nowrap">{user.name}</td>
                         <td className="p-4 text-slate-500 dark:text-slate-400 whitespace-nowrap">{user.email}</td>
-                        <td className="p-4 text-sm whitespace-nowrap">{new Date(user.created_at).toLocaleDateString()}</td>
-                        <td className="p-4 text-sm whitespace-nowrap">{user.last_login_at ? new Date(user.last_login_at).toLocaleDateString() : 'Never'}</td>
+                        <td className="p-4 text-sm whitespace-nowrap">{new Date(user.created_at).toLocaleString()}</td>
+                        <td className="p-4 text-sm whitespace-nowrap">{user.last_login_at ? new Date(user.last_login_at).toLocaleString() : 'Never'}</td>
                         <td className="p-4 text-center font-mono">{user.transactions_count}</td>
                         <td className="p-4 text-center font-mono">{user.ai_interactions_count}</td>
                         <td className="p-4 text-center">

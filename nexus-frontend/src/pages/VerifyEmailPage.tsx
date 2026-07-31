@@ -31,7 +31,7 @@ export default function VerifyEmailPage() {
       const res = await client.post('/verify-otp', { email, otp });
       localStorage.setItem('nexus_token', res.data.token);
       localStorage.setItem('nexus_user', JSON.stringify(res.data.user));
-      navigate('/');
+      navigate('/dashboard');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Invalid OTP code.');
     } finally {

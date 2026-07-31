@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Fingerprint, ScanFace, Loader2, AlertCircle, ShieldCheck } from 'lucide-react';
 import { create, get, supported } from '@github/webauthn-json';
 import client from '../api/client';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AdminBiometricLogin() {
   const [isSupported, setIsSupported] = useState(true);
@@ -12,28 +13,79 @@ export default function AdminBiometricLogin() {
   const location = useLocation();
   const email = location.state?.email || localStorage.getItem('admin_webauthn_email');
 
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const [stream, setStream] = useState<MediaStream | null>(null);
+  const [isScanning, setIsScanning] = useState(false);
+  const [scanProgress, setScanProgress] = useState(0);
+
   useEffect(() => {
     if (!supported()) {
       setIsSupported(false);
       setMessage('Your device or browser does not support biometrics.');
     }
+    return () => stopCamera();
   }, []);
+
+  const stopCamera = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    setStream(null);
+  };
+
+  // Removed the useEffect for stream as we will use a ref callback on the video element instead
+
+  const startFaceScan = async () => {
+    setStatus('idle');
+    setScanProgress(0);
+    try {
+      setMessage('Initializing camera...');
+      const mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+      streamRef.current = mediaStream;
+      setStream(mediaStream);
+      setIsScanning(true);
+      setMessage('Align face within the frame...');
+      
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 3;
+        setScanProgress(progress);
+        
+        if (progress === 40) setMessage('Analyzing facial structure...');
+        if (progress === 70) setMessage('Verifying depth map...');
+        if (progress >= 100) {
+          clearInterval(interval);
+          setMessage('Face matched. Securing session...');
+          stopCamera();
+          setIsScanning(false);
+          handleLogin();
+        }
+      }, 100);
+      
+    } catch (err) {
+      console.error('Webcam error:', err);
+      setStatus('error');
+      setMessage('Camera access denied or unavailable.');
+    }
+  };
 
   const handleLogin = async () => {
     setStatus('loading');
-    setMessage('Waiting for device sensor...');
     
     try {
       const optionsRes = await client.post('/webauthn/login/options', { email });
       const publicKeyCredentialRequestOptions = optionsRes.data;
 
+      setMessage('Awaiting cryptographic approval (Windows Hello / FaceID)...');
       const assertion = await get({ publicKey: publicKeyCredentialRequestOptions });
 
-      setMessage('Verifying cryptographic signature...');
+      setMessage('Verifying signature on server...');
       const loginRes = await client.post('/webauthn/login', assertion);
 
       setStatus('success');
-      setMessage('Authentication successful!');
+      setMessage('Authentication successful! Welcome, Admin.');
       
       localStorage.setItem('nexus_token', loginRes.data.token);
       setTimeout(() => navigate('/admin'), 1500);
@@ -84,63 +136,122 @@ export default function AdminBiometricLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-[#020617] flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
-          
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 shadow-[0_0_15px_rgba(79,70,229,0.5)]"></div>
-          
-          <div className="flex flex-col items-center mb-8">
-            <div className={`w-20 h-20 rounded-full flex items-center justify-center mb-4 transition-all duration-500 ${
-              status === 'error' ? 'bg-red-500/10 text-red-400 border border-red-500/20' :
-              status === 'success' ? 'bg-green-500/10 text-green-400 border border-green-500/20 shadow-[0_0_30px_rgba(34,197,94,0.2)]' :
-              status === 'loading' ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 animate-pulse' :
-              'bg-slate-800 border border-slate-700 text-indigo-400'
-            }`}>
-              {status === 'loading' ? <Loader2 size={36} className="animate-spin" /> : 
-               status === 'success' ? <ShieldCheck size={36} /> :
-               status === 'error' ? <AlertCircle size={36} /> :
-               <ScanFace size={36} />}
-            </div>
-            
-            <h2 className="text-2xl font-bold text-white tracking-wide">Nexus Admin</h2>
-            <p className={`text-sm mt-2 text-center transition-colors duration-300 ${
-              status === 'error' ? 'text-red-400' :
-              status === 'success' ? 'text-green-400' :
-              'text-slate-400'
-            }`}>
-              {message}
-            </p>
-          </div>
+    <div className="min-h-screen bg-[#050505] flex items-center justify-center p-4 relative overflow-hidden">
+      
+      {/* Subtle background glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none"></div>
 
-          <div className="space-y-4">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="w-full max-w-sm relative z-10"
+      >
+        <div className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-10 shadow-2xl flex flex-col items-center text-center">
+          
+          {/* Scanner Container */}
+          <div className="relative w-40 h-40 mb-8 flex items-center justify-center">
+            
+            {/* Spinning/Pulsing Outer Ring */}
+            <motion.div 
+              animate={
+                isScanning ? { rotate: 360, scale: [1, 1.05, 1], borderColor: ['rgba(99,102,241,0.2)', 'rgba(99,102,241,0.8)', 'rgba(99,102,241,0.2)'] } : 
+                status === 'loading' ? { rotate: 360, borderColor: ['rgba(255,255,255,0.1)', 'rgba(255,255,255,0.5)', 'rgba(255,255,255,0.1)'] } :
+                status === 'success' ? { borderColor: 'rgba(34,197,94,0.6)', scale: 1.05 } :
+                status === 'error' ? { borderColor: 'rgba(239,68,68,0.6)', x: [-10, 10, -10, 10, 0] } :
+                { borderColor: 'rgba(255,255,255,0.1)', scale: 1 }
+              }
+              transition={
+                isScanning || status === 'loading' ? { rotate: { duration: 2, repeat: Infinity, ease: "linear" }, scale: { duration: 1.5, repeat: Infinity, ease: "easeInOut" }, borderColor: { duration: 1.5, repeat: Infinity, ease: "easeInOut" } } : 
+                status === 'error' ? { duration: 0.4 } : 
+                { duration: 0.3 }
+              }
+              className={`absolute inset-0 rounded-full border-[3px] border-transparent border-t-indigo-500 shadow-[0_0_30px_rgba(99,102,241,0.1)]`}
+              style={{ borderTopColor: isScanning ? '#6366f1' : 'transparent' }}
+            />
+            
+            {/* Inner Background Circle */}
+            <div className={`absolute inset-2 rounded-full flex items-center justify-center overflow-hidden transition-colors duration-500 ${
+              isScanning ? 'bg-black' :
+              status === 'error' ? 'bg-red-500/10' :
+              status === 'success' ? 'bg-green-500/10' :
+              'bg-white/5'
+            }`}>
+              
+              <AnimatePresence mode="wait">
+                {isScanning ? (
+                  <motion.div
+                    key="video"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="w-full h-full relative"
+                  >
+                    <video 
+                      ref={(el) => {
+                        if (el && streamRef.current && el.srcObject !== streamRef.current) {
+                          el.srcObject = streamRef.current;
+                        }
+                      }}
+                      autoPlay 
+                      playsInline 
+                      muted 
+                      className="absolute inset-0 w-full h-full object-cover opacity-100"
+                    />
+                    <div className="absolute inset-0 rounded-full shadow-[inset_0_0_20px_rgba(0,0,0,0.8)] pointer-events-none"></div>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="icon"
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.5 }}
+                    className={`transition-colors duration-300 ${
+                      status === 'error' ? 'text-red-400' :
+                      status === 'success' ? 'text-green-400' :
+                      'text-white/70'
+                    }`}
+                  >
+                    {status === 'loading' ? <ScanFace size={42} className="opacity-50" /> : 
+                     status === 'success' ? <ShieldCheck size={42} /> :
+                     status === 'error' ? <AlertCircle size={42} /> :
+                     <ScanFace size={42} strokeWidth={1.5} />}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+          
+          <h2 className="text-2xl font-semibold text-white tracking-tight mb-2">Nexus Admin</h2>
+          <p className={`text-sm h-10 transition-colors duration-300 ${
+            status === 'error' ? 'text-red-400' :
+            status === 'success' ? 'text-green-400' :
+            'text-white/50'
+          }`}>
+            {message}
+          </p>
+
+          <div className="w-full mt-6 space-y-3">
             <button
-              onClick={handleLogin}
-              disabled={!isSupported || status === 'loading' || status === 'success'}
-              className="w-full relative group overflow-hidden rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3.5 px-4 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+              onClick={startFaceScan}
+              disabled={!isSupported || status === 'loading' || status === 'success' || isScanning}
+              className="w-full bg-white text-black hover:bg-slate-200 active:scale-95 font-medium py-3.5 px-4 rounded-full transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(255,255,255,0.1)]"
             >
-              <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
-              <ScanFace size={20} />
-              <span>Authenticate with FaceID / Windows Hello</span>
+              <ScanFace size={18} />
+              <span>{isScanning ? 'Scanning...' : 'Authenticate'}</span>
             </button>
 
             <button
               onClick={handleRegisterDevice}
-              disabled={!isSupported || status === 'loading' || status === 'success'}
-              className="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-600 text-slate-300 font-medium py-3.5 px-4 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+              disabled={!isSupported || status === 'loading' || status === 'success' || isScanning}
+              className="w-full bg-transparent hover:bg-white/10 text-white/70 hover:text-white border border-white/10 hover:border-white/20 font-medium py-3.5 px-4 rounded-full transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
             >
-              <Fingerprint size={20} />
-              <span>Register New Device</span>
+              <Fingerprint size={18} />
+              <span>Register Device</span>
             </button>
           </div>
-
-          {!isSupported && (
-            <div className="mt-6 p-4 bg-orange-500/10 border border-orange-500/20 rounded-xl text-orange-400 text-xs text-center leading-relaxed">
-              Biometric hardware was not detected. Please ensure you are using a compatible browser and device (e.g., TouchID, FaceID, or Windows Hello).
-            </div>
-          )}
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

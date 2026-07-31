@@ -35,6 +35,11 @@ class AuthController extends Controller
         $user->save();
         
         Log::info("OTP Code for {$user->email} is {$otp}");
+        try {
+            Mail::to($user->email)->send(new OtpMail($otp));
+        } catch (\Throwable $e) {
+            Log::warning("Could not send OTP email to {$user->email}: " . $e->getMessage());
+        }
 
         $token = $user->createToken($this->getDeviceName($request))->plainTextToken;
 
@@ -71,7 +76,11 @@ class AuthController extends Controller
             $user->otp_code = $otp;
             $user->save();
             Log::info("New OTP Code for {$user->email} is {$otp}");
-            Mail::to($user->email)->send(new OtpMail($otp));
+            try {
+                Mail::to($user->email)->send(new OtpMail($otp));
+            } catch (\Throwable $e) {
+                Log::warning("Could not send OTP email to {$user->email}: " . $e->getMessage());
+            }
 
             return response()->json([
                 'requires_verification' => true,
@@ -82,6 +91,8 @@ class AuthController extends Controller
 
         if ($user->is_admin) {
             \Illuminate\Support\Facades\Auth::login($user);
+            $user->last_login_at = now();
+            $user->save();
             return response()->json([
                 'requires_biometric' => true,
                 'email' => $user->email,
@@ -118,6 +129,7 @@ class AuthController extends Controller
         }
 
         $user->email_verified_at = now();
+        $user->last_login_at = now();
         $user->otp_code = null;
         $user->save();
 
@@ -145,7 +157,11 @@ class AuthController extends Controller
         $user->otp_code = $otp;
         $user->save();
         Log::info("Resent OTP Code for {$user->email} is {$otp}");
-        Mail::to($user->email)->send(new OtpMail($otp));
+        try {
+            Mail::to($user->email)->send(new OtpMail($otp));
+        } catch (\Throwable $e) {
+            Log::warning("Could not send OTP email to {$user->email}: " . $e->getMessage());
+        }
 
         return response()->json(['message' => 'OTP resent.']);
     }

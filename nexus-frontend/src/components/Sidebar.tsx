@@ -1,4 +1,4 @@
-import { Bot, Settings, LogOut, LayoutDashboard, Wallet, Calendar, Target, Shield } from 'lucide-react';
+import { Bot, Settings, LogOut, LayoutDashboard, Wallet, Calendar, Target, Shield, Calculator } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
 export default function Sidebar() {
@@ -39,6 +39,10 @@ export default function Sidebar() {
         <Link to="/subscriptions" className={getLinkClass('/subscriptions')}>
           <Calendar size={20} className={getIconClass('/subscriptions')} />
           <span>Subscriptions</span>
+        </Link>
+        <Link to="/calculators" className={getLinkClass('/calculators')}>
+          <Calculator size={20} className={getIconClass('/calculators')} />
+          <span>Calculators</span>
         </Link>
         <Link to="/budgets" className={getLinkClass('/budgets')}>
           <Target size={20} className={getIconClass('/budgets')} />

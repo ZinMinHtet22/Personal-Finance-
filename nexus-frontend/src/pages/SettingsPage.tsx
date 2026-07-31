@@ -319,7 +319,6 @@ export default function SettingsPage() {
                         <form onSubmit={handlePreview} className="space-y-4">
                           <div className="flex items-center gap-4">
                             <input type="file" accept=".csv" onChange={e => setImportFile(e.target.files?.[0] || null)} className="text-slate-600 dark:text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-slate-200 dark:file:bg-slate-800 file:text-slate-900 dark:file:text-white hover:file:bg-slate-300 dark:hover:file:bg-slate-700 cursor-pointer transition-colors" />
-                            <a href="/nexus_template.csv" download className="text-sm text-slate-400 hover:text-slate-300">Download Example Template</a>
                           </div>
                           <button type="submit" disabled={!importFile} className="bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 active:scale-95 transition-all shadow-sm disabled:opacity-50 font-semibold py-2 px-6 rounded-lg transition-colors">
                             Preview Import
