@@ -39,7 +39,7 @@ export default function CategoryChart({ data }: CategoryChartProps) {
             <Tooltip 
               contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '12px', color: '#f8fafc', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.5)' }}
               itemStyle={{ color: '#f8fafc', fontWeight: 500 }}
-              formatter={(value: number) => [`$${value.toLocaleString()}`, undefined]}
+              formatter={(value) => [`$${Number(value ?? 0).toLocaleString()}`, undefined]}
             />
           </PieChart>
           </ResponsiveContainer>

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import client from '../api/client';
-import { Bot, User, Send, Sparkles } from 'lucide-react';
+import { Bot, User, Send } from 'lucide-react';
 
 export default function ChatbotPage() {
   const [messages, setMessages] = useState<{role: string, content: string}[]>([

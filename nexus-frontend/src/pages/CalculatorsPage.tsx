@@ -175,7 +175,7 @@ export default function CalculatorsPage() {
                           <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} tickFormatter={v => `$${(v/1000)}k`} />
                           <Tooltip 
                             contentStyle={{ backgroundColor: '#0f172a', borderColor: '#1e293b', borderRadius: '12px', color: '#f8fafc', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.5)' }}
-                            formatter={(value: number) => [`$${value.toLocaleString()}`, undefined]}
+                            formatter={(value) => [`$${Number(value ?? 0).toLocaleString()}`, undefined]}
                           />
                           <Area type="monotone" dataKey="total" name="Total Balance" stroke="#6366f1" strokeWidth={3} fillOpacity={1} fill="url(#colorTotal)" />
                           <Area type="monotone" dataKey="contributions" name="Total Contributions" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorContrib)" />

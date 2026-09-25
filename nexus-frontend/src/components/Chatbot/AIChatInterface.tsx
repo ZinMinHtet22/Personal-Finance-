@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Bot, User, Send, X, MessageSquare, Sparkles } from 'lucide-react';
+import { Bot, User, Send, X, MessageSquare } from 'lucide-react';
 import client from '../../api/client';
 
 export default function AIChatInterface() {

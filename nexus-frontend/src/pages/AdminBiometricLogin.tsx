@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Fingerprint, ScanFace, Loader2, AlertCircle, ShieldCheck } from 'lucide-react';
+import { Fingerprint, ScanFace, AlertCircle, ShieldCheck } from 'lucide-react';
 import { create, get, supported } from '@github/webauthn-json';
 import client from '../api/client';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -13,11 +13,10 @@ export default function AdminBiometricLogin() {
   const location = useLocation();
   const email = location.state?.email || localStorage.getItem('admin_webauthn_email');
 
-  const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const [stream, setStream] = useState<MediaStream | null>(null);
+  const [, setStream] = useState<MediaStream | null>(null);
   const [isScanning, setIsScanning] = useState(false);
-  const [scanProgress, setScanProgress] = useState(0);
+  const [, setScanProgress] = useState(0);
 
   useEffect(() => {
     if (!supported()) {
