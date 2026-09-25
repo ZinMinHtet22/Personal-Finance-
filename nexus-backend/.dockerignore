@@ -1,0 +1,12 @@
+node_modules
+vendor
+.env
+*.log
+.git
+database/*.sqlite
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+composer.phar
+composer-setup.php

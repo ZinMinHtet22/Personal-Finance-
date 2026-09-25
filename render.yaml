@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: nexus-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./nexus-backend/Dockerfile
+    dockerContext: ./nexus-backend
+    healthCheckPath: /up
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_KEY
+        generateValue: true
+      - key: APP_URL
+        value: https://nexus-api.onrender.com
+      - key: DB_CONNECTION
+        value: sqlite
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: CORS_ORIGINS
+        sync: false
+      - key: WEBAUTHN_ORIGINS
+        sync: false
