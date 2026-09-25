@@ -20,9 +20,10 @@ class DatabaseSeeder extends Seeder
             return;
         }
 
-        User::factory()->create([
+        User::create([
             'name' => 'Test User',
             'email' => 'test@example.com',
+            'password' => 'password',
         ]);
 
         $this->call(AdminUserSeeder::class);
