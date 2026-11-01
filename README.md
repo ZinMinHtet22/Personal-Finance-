@@ -1,6 +1,6 @@
 # Nexus — Personal Finance
 
-> Finance platform with biometric/passkey WebAuthn login, budgets, finance coach, admin dashboard with roles, and email OTP.
+> Finance platform with biometric/passkey WebAuthn login, budgets, AI finance coach, admin dashboard with roles, and email OTP.
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-000000?style=for-the-badge&logo=vercel)](https://nexus-frontend-tau-three.vercel.app)
 [![Laravel](https://img.shields.io/badge/Laravel-11-FF2D20?style=for-the-badge&logo=laravel)](https://laravel.com/)
@@ -24,7 +24,7 @@
 - 🔐 **Biometric / Passkey Login** — WebAuthn authentication (no passwords)
 - 📧 **Email OTP** — one-time password verification
 - 💰 **Budgets** — set and track spending limits
-- 🤖 **Finance Coach** — personalized financial guidance and tips
+- 🤖 **AI Finance Coach** — personalized financial guidance
 - 👥 **Admin Dashboard** — role-based admin & user management
 - 🌍 **Multi-Currency** — support for multiple currencies
 - 📊 **Analytics Charts** — visualize income, expenses, and savings
