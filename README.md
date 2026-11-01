@@ -2,30 +2,28 @@
 
 > Finance platform with biometric/passkey WebAuthn login, budgets, AI finance coach, admin dashboard with roles, and email OTP.
 
-
 ---
 
-## 📸 Screenshot
-
+## Screenshot
 
 > Replace `screenshot.png` with an actual screenshot of your app running locally or on the live demo.
 
 ---
 
-## 🚀 Features
+## Features
 
-- 🔐 **Biometric / Passkey Login** — WebAuthn authentication (no passwords)
-- 📧 **Email OTP** — one-time password verification
-- 💰 **Budgets** — set and track spending limits
-- 🤖 **AI Finance Coach** — personalized financial guidance
-- 👥 **Admin Dashboard** — role-based admin & user management
-- 🌍 **Multi-Currency** — support for multiple currencies
-- 📊 **Analytics Charts** — visualize income, expenses, and savings
-- 🐘 **Laravel API + React + TypeScript** — type-safe full-stack architecture
+- **Biometric / Passkey Login** — WebAuthn authentication (no passwords)
+- **Email OTP** — one-time password verification
+- **Budgets** — set and track spending limits
+- **AI Finance Coach** — personalized financial guidance
+- **Admin Dashboard** — role-based admin & user management
+- **Multi-Currency** — support for multiple currencies
+- **Analytics Charts** — visualize income, expenses, and savings
+- **Laravel API + React + TypeScript** — type-safe full-stack architecture
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 |-------|------------|
@@ -38,7 +36,7 @@
 
 ---
 
-## 📦 Installation
+## Installation
 
 ### Prerequisites
 
@@ -98,13 +96,13 @@ npm run build
 
 ---
 
-## 🌐 Live Demo
+## Live Demo
 
-🔗 [https://nexus-frontend-tau-three.vercel.app](https://nexus-frontend-tau-three.vercel.app)
+[https://nexus-frontend-tau-three.vercel.app](https://nexus-frontend-tau-three.vercel.app)
 
 ---
 
-## 🔐 Environment Variables
+## Environment Variables
 
 Create a `.env` file in `nexus-backend/` based on `.env.example`. Key variables:
 
@@ -116,11 +114,11 @@ Create a `.env` file in `nexus-backend/` based on `.env.example`. Key variables:
 | `DB_PASSWORD` | MySQL password |
 | `MAIL_*` | Mail settings for OTP emails |
 
-> ⚠️ Never commit your actual `.env` file. It is gitignored.
+> Never commit your actual `.env` file. It is gitignored.
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 Personal-Finance-/
@@ -146,7 +144,7 @@ Personal-Finance-/
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request.
 
@@ -158,13 +156,13 @@ Contributions are welcome! Please open an issue or submit a pull request.
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License.
 
 ---
 
-## 👨‍💻 Author
+## Author
 
 **Jeffery Zin Min Htet**  
 Full-Stack Developer | IT Engineer | Content Developer  
@@ -175,4 +173,4 @@ Yangon, Myanmar
 
 ---
 
-> ⭐ Star this repo if you find it useful!
+> Star this repo if you find it useful!
